@@ -1,0 +1,30 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Virtual environment
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs and caches
+*.log
+*.cache
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Compiled files
+*.so
+*.dll
+*.dylib
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
