@@ -11,19 +11,23 @@ Requirements:
     - plotly
     - yfinance
     - python-dateutil
+    (See requirements.txt for specific versions)
 
 Usage:
     python stock_plotter.py TICKER TIME_PERIOD
-    
-    Examples:
-        python stock_plotter.py AAPL 1y
-        python stock_plotter.py MSFT from 2020
-        python stock_plotter.py TSLA 6M
+    python stock_plotter.py --test  # Runs basic demonstration tests
+
+Examples:
+    python stock_plotter.py AAPL 1y
+    python stock_plotter.py MSFT "from 2020"
+    python stock_plotter.py TSLA 6M
+    python stock_plotter.py GOOGL "this year"
 """
 
 import re
 import sys
 import argparse
+import logging
 from datetime import datetime
 from typing import Tuple, Optional, Union
 
@@ -33,217 +37,265 @@ import plotly.graph_objects as go
 import yfinance as yf
 from dateutil.relativedelta import relativedelta
 
+# Configure basic logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(module)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)] # Log to stdout
+)
+
 
 class StockTrendPlotter:
     """
     Class to handle stock price plotting with flexible date options.
-    
-    This class provides methods to fetch historical stock data from Yahoo Finance
-    and visualize it with customizable date ranges. It supports standard Yahoo Finance
-    periods, natural language date specifications, and relative time patterns.
-    
+
+    Provides methods to fetch historical stock data from Yahoo Finance
+    and visualize it using Plotly with customizable date ranges.
+    Supports standard Yahoo Finance periods, natural language date specifications,
+    and relative time patterns.
+
     Attributes:
         ticker (str): The stock ticker symbol (e.g., 'AAPL', 'MSFT').
-        time_period (str): The time period for data retrieval, which can be:
-            - Standard Yahoo Finance periods ('1d', '5d', '1mo', '3mo', '6mo', 
-              '1y', '2y', '5y', '10y', 'ytd', 'max')
-            - Natural language ('this month', 'this year', 'from 2020')
-            - Relative patterns ('7M', '10D', '2W', '3Y')
+        time_period (str): The time period for data retrieval.
     """
 
-    # Valid period strings accepted by Yahoo Finance
-    VALID_PERIODS = {
-        '1d', '5d', '1mo', '3mo', '6mo', 
+    # Valid period strings accepted by Yahoo Finance (now immutable)
+    VALID_PERIODS = frozenset({
+        '1d', '5d', '1mo', '3mo', '6mo',
         '1y', '2y', '5y', '10y', 'ytd', 'max'
-    }
+    })
 
     def __init__(self, ticker: str, time_period: str):
         """
-        Initialize the StockTrendPlotter with a ticker and time period.
-        
+        Initialize the StockTrendPlotter.
+
         Args:
             ticker (str): The stock ticker symbol (e.g., 'AAPL').
             time_period (str): The time period for fetching data.
         """
-        self.ticker = ticker.upper()  # Ensure ticker is uppercase
+        if not ticker or not isinstance(ticker, str):
+            raise ValueError("Ticker symbol must be a non-empty string.")
+        if not time_period or not isinstance(time_period, str):
+            raise ValueError("Time period must be a non-empty string.")
+
+        self.ticker = ticker.upper()
         self.time_period = time_period
+        logging.info("Initialized StockTrendPlotter for %s with period '%s'", self.ticker, self.time_period)
 
     def _parse_date_range(self, date_input: str) -> Tuple[Optional[datetime], Optional[datetime]]:
         """
-        Parse natural language date ranges.
-        
-        Supports formats like:
-        - 'this year'
-        - 'this month'
-        - 'from 2020'
-        - 'from 2020-05'
-        
+        Parse natural language date ranges like 'this year', 'from 2020'.
+
         Args:
             date_input (str): Natural language date range string.
-            
-        Returns:
-            tuple: (start_date, end_date) as datetime objects or (None, None) if no match.
-        """
-        today = datetime.today()
-        date_input_lower = date_input.lower()
 
-        # Match "from YYYY" or "from YYYY-MM" pattern
+        Returns:
+            tuple: (start_date, end_date) as datetime objects or (None, None).
+        """
+        today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) # Normalize today
+        date_input_lower = date_input.lower().strip()
+
         if 'from' in date_input_lower:
-            match = re.match(r'.*from (\d{4})(?:-(\d{2}))?', date_input_lower)
+            match = re.match(r'.*from\s+(\d{4})(?:-(\d{1,2}))?', date_input_lower)
             if match:
                 year = int(match.group(1))
-                month = int(match.group(2)) if match.group(2) else 1
-                start_date = datetime(year, month, 1)
-                return start_date, today
+                month_str = match.group(2)
+                month = int(month_str) if month_str else 1
+                try:
+                    start_date = datetime(year, month, 1)
+                    logging.debug("Parsed 'from' date: %s", start_date)
+                    # Ensure start date is not in the future
+                    return (start_date, today) if start_date <= today else (None, None)
+                except ValueError: # Invalid date like 2020-13
+                    logging.warning("Invalid date components parsed from '%s'", date_input)
+                    return None, None
 
-        # Match "this month" pattern
-        if 'this month' in date_input_lower:
-            return today.replace(day=1), today
+        if 'this month' == date_input_lower:
+            start_date = today.replace(day=1)
+            logging.debug("Parsed 'this month', start_date: %s", start_date)
+            return start_date, today
 
-        # Match "this year" pattern
-        if 'this year' in date_input_lower:
-            return today.replace(month=1, day=1), today
+        if 'this year' == date_input_lower:
+            start_date = today.replace(month=1, day=1)
+            logging.debug("Parsed 'this year', start_date: %s", start_date)
+            return start_date, today
 
+        logging.debug("No natural language date pattern matched for '%s'", date_input)
         return None, None
 
     def _parse_relative_period(self, period_input: str) -> Tuple[Optional[datetime], Optional[datetime]]:
         """
-        Parse relative time period patterns.
-        
-        Supports formats like:
-        - '7M' (7 months ago until now)
-        - '2W' (2 weeks ago until now)
-        - '10D' (10 days ago until now)
-        - '3Y' (3 years ago until now)
-        
+        Parse relative time period patterns like '7M', '2W', '10D', '3Y'.
+
         Args:
             period_input (str): Relative time period string.
-            
+
         Returns:
-            tuple: (start_date, end_date) as datetime objects or (None, None) if no match.
+            tuple: (start_date, end_date) as datetime objects or (None, None).
         """
-        # Match digit + unit pattern (e.g., 7M, 10D)
-        match = re.match(r'^(\d+)([DdWwMmYy])$', period_input)
+        today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) # Normalize today
+        match = re.match(r'^(\d+)([DdWwMmYy])$', period_input.strip())
         if not match:
-            return None, None  # No valid pattern detected
+            logging.debug("No relative period pattern matched for '%s'", period_input)
+            return None, None
 
         qty = int(match.group(1))
-        unit = match.group(2).lower()  # Normalized unit (d, w, m, y)
-        today = datetime.today()
+        unit = match.group(2).lower()
+        delta_args = {}
 
-        # Calculate relative date based on unit
         if unit == 'd':
-            return today - relativedelta(days=qty), today
-        if unit == 'w':
-            return today - relativedelta(weeks=qty), today
-        if unit == 'm':
-            return today - relativedelta(months=qty), today
-        if unit == 'y':
-            return today - relativedelta(years=qty), today
+            delta_args['days'] = qty
+        elif unit == 'w':
+            delta_args['weeks'] = qty
+        elif unit == 'm':
+            delta_args['months'] = qty
+        elif unit == 'y':
+            delta_args['years'] = qty
+        else:
+             # Should not happen due to regex, but defensive check
+            logging.warning("Unexpected unit '%s' in relative period parsing", unit)
+            return None, None
 
-        return None, None
+        if qty <= 0:
+            logging.warning("Relative period quantity must be positive, got %d", qty)
+            return None, None
+
+        try:
+            start_date = today - relativedelta(**delta_args)
+            logging.debug("Parsed relative period '%s', start_date: %s", period_input, start_date)
+            return start_date, today
+        except Exception as e:
+            logging.error("Error calculating relative delta for '%s': %s", period_input, e)
+            return None, None
+
 
     def _validate_period(self) -> Tuple[Optional[datetime], Optional[datetime], Optional[str]]:
         """
         Validate and determine the correct date range or period type.
-        
-        This method tries to interpret the time_period attribute in different ways:
-        1. As a natural language date range
-        2. As a standard Yahoo Finance period string
-        3. As a relative time pattern
-        
+
         Returns:
-            tuple: (start_date, end_date, yf_period) where:
-                - start_date, end_date: datetime objects if a date range is used
-                - yf_period: string if a standard Yahoo period is used
-                
+            tuple: (start_date, end_date, yf_period)
         Raises:
-            ValueError: If the time period format is invalid or can't be interpreted.
+            ValueError: If the time period format is invalid.
         """
-        # Try natural language date range
+        # 1. Try natural language
         start, end = self._parse_date_range(self.time_period)
-        if start and end:
-            return start, end, None  # Use start-end range
+        if start is not None and end is not None:
+            logging.info("Using natural language date range: %s to %s", start.date(), end.date())
+            return start, end, None
 
-        # Try standard Yahoo Finance period
-        if self.time_period.lower() in self.VALID_PERIODS:
-            return None, None, self.time_period.lower()  # Use Yahoo period
+        # 2. Try standard Yahoo Finance period
+        period_lower = self.time_period.lower()
+        if period_lower in self.VALID_PERIODS:
+            logging.info("Using standard Yahoo Finance period: '%s'", period_lower)
+            return None, None, period_lower
 
-        # Try relative date pattern
+        # 3. Try relative date pattern
         start, end = self._parse_relative_period(self.time_period)
-        if start and end:
-            return start, end, None  # Use custom range
+        if start is not None and end is not None:
+            logging.info("Using relative date range: %s to %s", start.date(), end.date())
+            return start, end, None
 
-        # If all parsing attempts fail, raise error with guidance
-        raise ValueError(
+        # If all fail
+        error_msg = (
             f"Invalid time period: '{self.time_period}'.\n"
-            f"Use a valid Yahoo Finance period ({', '.join(self.VALID_PERIODS)}), "
-            f"a natural language range like 'from 2020'/'this month', "
-            f"or a relative pattern like '7M'/'10D'/'2W'/'3Y'."
+            f"Use a valid Yahoo Finance period (e.g., {', '.join(self.VALID_PERIODS)}), "
+            f"a natural language range (e.g., 'from 2020', 'this month'), "
+            f"or a relative pattern (e.g., '7M', '10D', '2W', '3Y')."
         )
+        logging.error(error_msg)
+        raise ValueError(error_msg)
 
     def fetch_data(self) -> pd.DataFrame:
         """
         Fetch stock price data from Yahoo Finance.
-        
+
         Returns:
             pandas.DataFrame: DataFrame with 'Date' and 'Price' columns.
-            
         Raises:
-            ValueError: If no data is found for the specified ticker and time range.
-            Exception: For other errors during data retrieval.
+            ValueError: If no data is found or time period is invalid.
+            IOError: If there's an issue fetching data from yfinance.
         """
-        start, end, yf_period = self._validate_period()
+        try:
+            start, end, yf_period = self._validate_period()
+        except ValueError as e:
+            # Validation error already logged, re-raise
+            raise e
+
+        logging.info("Fetching data for ticker %s...", self.ticker)
         yf_ticker = yf.Ticker(self.ticker)
+        df = pd.DataFrame() # Initialize empty DataFrame
 
-        # Fetch data using either date range or period
-        if start and end:
-            df = yf_ticker.history(start=start, end=end)
-        else:
-            df = yf_ticker.history(period=yf_period)
+        try:
+            if start is not None and end is not None:
+                logging.debug("Fetching history with start=%s, end=%s", start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+                df = yf_ticker.history(start=start, end=end)
+            elif yf_period is not None:
+                logging.debug("Fetching history with period=%s", yf_period)
+                df = yf_ticker.history(period=yf_period)
+            else:
+                # This case should ideally not be reached if _validate_period works correctly
+                 logging.error("Internal validation error: No valid period or date range determined.")
+                 raise ValueError("Internal error determining fetch parameters.")
 
-        # Check if data was retrieved
+        except Exception as e:
+            # Catch potential errors from yfinance (network, ticker not found, etc.)
+            logging.error("Failed to download data for %s from yfinance: %s", self.ticker, e, exc_info=True)
+            raise IOError(f"Could not fetch data for {self.ticker} from Yahoo Finance.") from e
+
         if df.empty:
+            logging.warning("No data returned for %s in the specified time range.", self.ticker)
             raise ValueError(f"No data found for {self.ticker} in the given time range.")
-        
+
+        logging.info("Successfully fetched %d data points for %s.", len(df), self.ticker)
+
         # Prepare data for plotting
-        df = df.reset_index()[['Date', 'Close']].rename(columns={'Close': 'Price'})
-        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.reset_index()
+        # Ensure 'Date' column exists and handle potential timezone awareness issues
+        if 'Date' not in df.columns and 'Datetime' in df.columns:
+            df = df.rename(columns={'Datetime': 'Date'}) # Adapt if column name differs
+
+        if 'Date' not in df.columns:
+             logging.error("Expected 'Date' column not found in yfinance output.")
+             raise ValueError("Data format error: Missing 'Date' column.")
+
+        # Convert to datetime and remove timezone if present (for consistency)
+        df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)
+        df = df[['Date', 'Close']].rename(columns={'Close': 'Price'})
 
         return df
 
     def plot_trend(self, show: bool = True) -> go.Figure:
         """
         Plot the stock price trend using Plotly.
-        
+
         Args:
             show (bool, optional): Whether to display the plot. Defaults to True.
-            
+
         Returns:
             plotly.graph_objects.Figure: The generated Plotly figure object.
-            
+
         Raises:
             ValueError: If the time period is invalid or no data is found.
-            Exception: For other errors during plotting.
+            IOError: If data fetching fails.
+            Exception: For other unexpected errors during plotting.
         """
+        logging.info("Generating plot for %s...", self.ticker)
         try:
-            # Fetch stock price data
             df = self.fetch_data()
-            
-            # Create plotly figure
+
             fig = go.Figure(go.Scatter(
-                x=df['Date'], 
-                y=df['Price'], 
-                mode='lines', 
-                name=f'{self.ticker} Stock Price',
+                x=df['Date'],
+                y=df['Price'],
+                mode='lines',
+                name=f'{self.ticker} Price',
                 line=dict(width=2)
             ))
 
-            # Configure plot layout
             fig.update_layout(
                 title=f'{self.ticker} Stock Price Trend ({self.time_period})',
                 xaxis_title='Date',
-                yaxis_title='Price (USD)',
+                yaxis_title='Price (USD)', # Assuming USD, might need adjustment
                 template='plotly_dark',
                 hovermode='x unified',
                 width=1000,
@@ -251,57 +303,72 @@ class StockTrendPlotter:
                 margin=dict(l=50, r=50, t=50, b=50)
             )
 
-            # Add range slider
             fig.update_xaxes(
                 rangeslider_visible=True,
                 rangeselector=dict(
-                    buttons=list([
+                    buttons=[
                         dict(count=7, label="1w", step="day", stepmode="backward"),
                         dict(count=1, label="1m", step="month", stepmode="backward"),
                         dict(count=6, label="6m", step="month", stepmode="backward"),
                         dict(count=1, label="1y", step="year", stepmode="backward"),
                         dict(step="all")
-                    ])
+                    ]
                 )
             )
 
+            logging.info("Plot figure created successfully for %s.", self.ticker)
+
             if show:
+                logging.info("Displaying plot...")
                 fig.show()
-                
+
             return fig
 
-        except ValueError as e:
-            print(f"Error: {e}")
+        except (ValueError, IOError) as e:
+            # Logged in fetch_data or _validate_period, just re-raise
+            logging.error("Plot generation failed due to data error: %s", e)
             raise
         except Exception as e:
-            print(f"Unexpected error: {e}")
+            logging.exception("An unexpected error occurred during plot generation for %s.", self.ticker)
             raise
 
 
-def run_tests() -> None:
-    """Run test cases demonstrating the functionality of StockTrendPlotter."""
-    print("\n=== Testing StockTrendPlotter ===")
-    
-    print("\n✔️  Testing Valid Yahoo Finance Periods")
-    StockTrendPlotter('AAPL', '6mo').plot_trend()
-    StockTrendPlotter('AAPL', '1y').plot_trend()
+def run_demonstration_tests() -> None:
+    """
+    Run basic demonstration cases.
+    Note: These are not exhaustive unit tests. Use pytest for proper testing.
+    """
+    print("\n=== Running Basic Demonstrations (requires network) ===")
+    test_cases = [
+        ('AAPL', '1mo'),
+        ('MSFT', 'this year'),
+        ('GOOGL', 'from 2023'),
+        ('TSLA', '3M'),
+        # ('INVALIDTICKER', '1y'), # Example failure case (requires yfinance error handling)
+        # ('AAPL', 'invalid period') # Example failure case
+    ]
 
-    print("\n✔️  Testing Natural Language Date Specifications")
-    StockTrendPlotter('AAPL', 'this month').plot_trend()
-    StockTrendPlotter('GOOGL', 'this year').plot_trend()
-    StockTrendPlotter('MSFT', 'from 2019-06').plot_trend()
+    for ticker, period in test_cases:
+        print(f"\n--- Testing: {ticker} for period '{period}' ---")
+        try:
+            plotter = StockTrendPlotter(ticker, period)
+            # Fetch data first to catch errors before plotting attempt
+            plotter.fetch_data()
+            print(f"Data fetched successfully for {ticker}, {period}.")
+            # Optionally plot if needed for visual check, but not required for demo
+            # plotter.plot_trend(show=True) # Uncomment to show plots
+        except (ValueError, IOError) as e:
+            print(f"Caught expected error: {e}")
+        except Exception as e:
+            print(f"Caught unexpected error: {e}")
 
-    print("\n✔️  Testing Relative Time Patterns")
-    StockTrendPlotter('TSLA', '7M').plot_trend()  # 7 months ago -> now
-    StockTrendPlotter('TSLA', '10D').plot_trend() # 10 days ago -> now
-    StockTrendPlotter('TSLA', '2W').plot_trend()  # 2 weeks ago -> now
-    StockTrendPlotter('TSLA', '3Y').plot_trend()  # 3 years ago -> now
-
-    print("\n❌  Testing Invalid Patterns (Should Raise Errors)")
+    print("\n--- Testing Invalid Input (Should Raise ValueError) ---")
     try:
-        StockTrendPlotter('AAPL', 'invalid range').plot_trend()
+        StockTrendPlotter('AAPL', 'invalid range').plot_trend(show=False)
     except ValueError as e:
-        print(f"Expected error: {e}")
+        print(f"Caught expected ValueError: {e}")
+
+    print("\n=== Demonstrations Finished ===")
 
 
 def parse_args():
@@ -312,41 +379,56 @@ def parse_args():
         epilog="""
 Examples:
   python stock_plotter.py AAPL 1y
-  python stock_plotter.py MSFT from 2020
+  python stock_plotter.py MSFT "from 2020"
   python stock_plotter.py TSLA 6M
-  python stock_plotter.py GOOGL this year
+  python stock_plotter.py GOOGL "this year"
   python stock_plotter.py --test
         """
     )
-    
+
     parser.add_argument('ticker', nargs='?', help='Stock ticker symbol (e.g., AAPL)')
-    parser.add_argument('time_period', nargs='?', help='Time period (e.g., 1y, from 2020, 6M)')
-    parser.add_argument('--test', action='store_true', help='Run test cases')
-    
+    parser.add_argument('time_period', nargs='?', help='Time period (e.g., 1y, "from 2020", 6M)')
+    parser.add_argument('--test', action='store_true', help='Run basic demonstration tests (requires network)')
+    parser.add_argument('--debug', action='store_true', help='Enable debug logging')
+
     return parser.parse_args()
 
 
 def main():
     """Main entry point of the script."""
     args = parse_args()
-    
+
+    # Adjust log level if debug flag is set
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logging.debug("Debug logging enabled.")
+
     if args.test:
-        run_tests()
-        return
-    
+        run_demonstration_tests()
+        return # Exit after tests
+
     if not args.ticker or not args.time_period:
-        print("Error: Both ticker and time_period are required.")
-        print("Run with --help for usage information.")
-        sys.exit(1)
-    
+        # Use ArgumentParser's error handling for missing arguments
+        # This branch might not be strictly necessary if nargs='?' handles it,
+        # but provides a clearer message if needed.
+        logging.error("Both ticker and time_period arguments are required.")
+        print("Usage: python stock_plotter.py TICKER TIME_PERIOD", file=sys.stderr)
+        print("Run with --help for more information.", file=sys.stderr)
+        # argparse should exit here if arguments are missing, but being explicit
+        sys.exit(2) # Use 2 for command line usage errors
+
     try:
         plotter = StockTrendPlotter(args.ticker, args.time_period)
-        plotter.plot_trend()
-    except ValueError as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+        plotter.plot_trend(show=True) # Show plot by default when run from CLI
+        logging.info("Script finished successfully.")
+
+    except (ValueError, IOError) as e:
+        # Specific, expected errors related to input or data fetching
+        logging.error("Execution failed: %s", e)
+        sys.exit(1) # General error exit code
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        # Unexpected errors
+        logging.exception("An unexpected critical error occurred.") # Includes traceback
         sys.exit(1)
 
 
