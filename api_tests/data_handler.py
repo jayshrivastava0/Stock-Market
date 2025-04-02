@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Data Handler Module
 
@@ -65,12 +66,10 @@ def _validate_date_input(date_str: str) -> date:
         InvalidInputError: If the date string is not a string, not in the correct format,
                            or represents an invalid date.
     """
-    # --- ADD THIS CHECK ---
     if not isinstance(date_str, str):
         msg = f"Invalid date input: Expected a string, but got {type(date_str).__name__}."
         log.error(msg)
         raise InvalidInputError(msg)
-    # --- END ADDED CHECK ---
 
     try:
         # Attempt to parse strictly in YYYY-MM-DD format

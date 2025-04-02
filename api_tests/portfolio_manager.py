@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Portfolio Manager Module
@@ -58,7 +59,7 @@ VALID_YF_PERIODS: Set[str] = frozenset({
     '1y', '2y', '5y', '10y', 'ytd', 'max'
 })
 # Define the price column to use from fetched data (Adjusted Close is usually preferred)
-PRICE_COLUMN_NAME: str = 'Adj Close'
+PRICE_COLUMN_NAME: str = 'Close'
 
 
 # --- Main Class Definition ---
