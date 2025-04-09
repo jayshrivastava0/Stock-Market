@@ -31,4 +31,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdocs build
-          ghp-import -n -p site
+          ghp-import -n -p -f site
