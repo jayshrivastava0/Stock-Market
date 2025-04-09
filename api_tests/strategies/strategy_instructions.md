@@ -22,43 +22,62 @@ class MyCustomStrategy(Strategy):
     e.g., A simple moving average crossover strategy.
     """
 
+    # --- __init__ Example ---
     def __init__(self, parameters: Optional[Dict[str, Any]] = None):
         """
         Initialize your strategy.
 
-        - Call the parent constructor: super().__init__(parameters)
-        - Process and store any strategy-specific parameters (e.g., moving average windows).
-        - Initialize any internal state needed (e.g., dictionaries to track calculations per ticker).
-        - Perform parameter validation using _validate_parameters() if needed.
+        - Call the parent constructor: super().__init__(parameters). This initializes
+          self.parameters and crucially calls the _validate_parameters method.
+        - Process and store strategy-specific parameters *after* the super call,
+          reading from the validated self.parameters dictionary.
+        - Initialize any internal state needed.
         """
-        super().__init__(parameters) # Essential: Initializes self.parameters
+        # Call super().__init__ FIRST. It sets self.parameters AND calls _validate_parameters.
+        super().__init__(parameters)
 
-        # Example: Extract parameters with defaults
+        # Now, extract parameters into instance attributes. Validation already occurred.
         self.short_window = self.parameters.get('short_window', 20)
         self.long_window = self.parameters.get('long_window', 50)
 
         # Example: Initialize internal state (e.g., store calculated indicators)
         self.indicators = {} # Dictionary to hold DataFrames or Series per ticker
 
-        # Optional: Validate parameters specific to this strategy
-        self._validate_parameters()
+        # The call to self._validate_parameters() is typically handled by the base class init,
+        # so it's often not needed here explicitly unless you have post-super validation needs.
 
         print(f"MyCustomStrategy initialized with short={self.short_window}, long={self.long_window}")
 
 
+    # --- _validate_parameters Example ---
     def _validate_parameters(self) -> None:
         """
         Optional: Implement custom validation for your strategy's parameters.
         Raise ConfigError (imported from backtester) if validation fails.
+
+        IMPORTANT: This method is called by the base Strategy class constructor
+        *before* instance attributes (like self.short_window) are assigned in
+        the derived __init__. Therefore, validation logic MUST read parameters
+        directly from the self.parameters dictionary using .get().
         """
         from backtester import ConfigError # Import locally if needed or globally
 
-        if not isinstance(self.short_window, int) or self.short_window <= 0:
-            raise ConfigError("'short_window' parameter must be a positive integer.")
-        if not isinstance(self.long_window, int) or self.long_window <= 0:
-            raise ConfigError("'long_window' parameter must be a positive integer.")
-        if self.short_window >= self.long_window:
-            raise ConfigError("'short_window' must be less than 'long_window'.")
+        # Define default values here or access them from class level if defined
+        default_short = 20
+        default_long = 50
+
+        # Validate by accessing self.parameters directly
+        short_window = self.parameters.get('short_window', default_short)
+        if not isinstance(short_window, int) or short_window <= 0:
+            raise ConfigError(f"'short_window' parameter must be a positive integer. Got: {short_window}")
+
+        long_window = self.parameters.get('long_window', default_long)
+        if not isinstance(long_window, int) or long_window <= 0:
+            raise ConfigError(f"'long_window' parameter must be a positive integer. Got: {long_window}")
+
+        # Ensure comparison uses the retrieved values
+        if short_window >= long_window:
+            raise ConfigError(f"'short_window' ({short_window}) must be less than 'long_window' ({long_window}).")
 
 
     def generate_signals(
@@ -108,6 +127,9 @@ class MyCustomStrategy(Strategy):
                 price_series = data_slice[('Close', ticker)]
 
                 # Check if enough data exists for calculation (e.g., for MA)
+                # NOTE: This example uses self.long_window which is assigned in __init__
+                # Ensure enough data check happens *after* __init__ completes.
+                # generate_signals is called after initialization.
                 if len(price_series.dropna()) < self.long_window:
                     # Not enough data yet for this ticker, skip
                     continue
@@ -183,11 +205,9 @@ class MyCustomStrategy(Strategy):
 2.  **Import Necessary Modules:** Import `Strategy`, `Order`, `Timestamp`, `HoldingsDict`, `TickerSymbol`, `BUY_ACTION`, `SELL_ACTION` from `backtester`. Import `pandas` and any other libraries you need (like `numpy` or technical analysis libraries like `TA-Lib` or `pandas_ta`).
 3.  **Define Your Class:** Create a class that inherits from `backtester.Strategy`. Give it a descriptive name (e.g., `SMACrossoverStrategy`, `VolatilityBreakout`).
 4.  **Implement `__init__`:**
-    *   Always call `super().__init__(parameters)` first.
-    *   Define default values for your strategy's parameters (e.g., indicator periods, thresholds).
-    *   Use `self.parameters.get('param_name', default_value)` to allow users to override defaults when initializing the `Backtester`.
-    *   Initialize any state variables your strategy needs to maintain across time steps (e.g., dictionaries to store calculated values, flags).
-    *   Optionally, call `self._validate_parameters()` if you implement custom validation.
+    *   Always call `super().__init__(parameters)` **first**. This initializes `self.parameters` and typically calls the `_validate_parameters` method.
+    *   **After** the `super().__init__` call, process and store your strategy-specific parameters as instance attributes (e.g., `self.my_param = self.parameters.get('my_param', default_value)`).
+    *   Initialize any other state variables your strategy needs.
 5.  **Implement `generate_signals` (The Core):**
     *   **Understand the Inputs:**
         *   `current_dt`: The timestamp you are currently evaluating. Your decisions must be based *only* on information available up to this point.
@@ -203,6 +223,7 @@ class MyCustomStrategy(Strategy):
     *   **Return Orders:** Collect all generated `Order` objects for the current `current_dt` into a list and return it. Return an empty list (`[]`) if no trades are desired for this step.
     *   **Error Handling:** Wrap potentially problematic code (e.g., complex calculations, accessing potentially missing data) in `try...except` blocks. If a non-recoverable strategy error occurs, you can raise `StrategyError` (imported from `backtester`) to halt the backtest clearly indicating the source.
 6.  **Implement `_validate_parameters` (Optional):** If your strategy takes parameters, add checks in this method to ensure they are valid (correct type, range, etc.). Raise `ConfigError` if validation fails. This helps catch configuration issues early.
+    **Important Note:** Because this validation method is called by the base class `Strategy` constructor (`super().__init__`) *before* your derived class's `__init__` assigns parameters to instance attributes (like `self.my_param`), your validation logic inside `_validate_parameters` **must** access the parameter values directly from the `self.parameters` dictionary (e.g., using `my_param_value = self.parameters.get('my_param', default_value)`). Do not rely on instance attributes like `self.my_param` within this method, as they won't exist yet. See the updated example in Section 1.
 
 ### 3. What the Backtester Provides (Within `generate_signals`)
 
@@ -300,3 +321,5 @@ Once your `MyCustomStrategy` class is defined (e.g., in `my_strategies.py`):
     # Get results
     equity_curve, trades = bt.get_results()
     ```
+
+---
