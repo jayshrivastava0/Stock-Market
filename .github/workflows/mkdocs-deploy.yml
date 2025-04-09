@@ -3,11 +3,15 @@ name: Deploy MkDocs to GitHub Pages
 on:
   push:
     branches:
-      - main  # or 'master' if that's your default branch
+      - main
+
+permissions:
+  contents: write 
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -20,9 +24,11 @@ jobs:
       - name: Install dependencies 📦
         run: |
           pip install -r requirements.txt
+          pip install ghp-import
 
       - name: Build and Deploy 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pip install ghp-import
           mkdocs build
           ghp-import -n -p site
