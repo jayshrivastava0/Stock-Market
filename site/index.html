@@ -1,0 +1,911 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Stock Market project">
+      
+      
+        <meta name="author" content="Sujay Shrivastava">
+      
+      
+      
+      
+        <link rel="next" href="script_information/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+    
+    
+      
+        <title>Stock Market Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.4af4bdda.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#portfolio-analytics-engine" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Stock Market Documentation" class="md-header__button md-logo" aria-label="Stock Market Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Stock Market Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Stock Market Documentation" class="md-nav__button md-logo" aria-label="Stock Market Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Stock Market Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features (Current)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology Stack
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-plotting-stock-trends-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Plotting Stock Trends (Command Line)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-using-modules-programmatically-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Using Modules Programmatically (Python)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="script_information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Script Information
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="available_strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Available Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="strategy_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategy Instructions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features (Current)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology Stack
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-plotting-stock-trends-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Plotting Stock Trends (Command Line)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-using-modules-programmatically-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Using Modules Programmatically (Python)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="portfolio-analytics-engine">Portfolio Analytics Engine</h1>
+<p><a href="https://www.python.org/"><img alt="Python Version" src="https://img.shields.io/badge/python-3.8%2B-blue.svg" /></a>
+<a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" /></a></p>
+<!-- Add more relevant badges as the project evolves, e.g., build status, code coverage -->
+<!-- [![Build Status](https://travis-ci.org/your_username/your_repo.svg?branch=main)](https://travis-ci.org/your_username/your_repo) -->
+<!-- [![Coverage Status](https://coveralls.io/repos/github/your_username/your_repo/badge.svg?branch=main)](https://coveralls.io/github/your_username/your_repo?branch=main) -->
+
+<p><strong>A robust and extensible Python toolkit for fetching financial data, visualizing market trends, and managing multi-asset portfolio performance over time.</strong></p>
+<h2 id="overview">Overview</h2>
+<p>The Portfolio Analytics Engine provides a foundational framework for quantitative financial analysis and portfolio management. It leverages industry-standard libraries to offer reliable data retrieval, insightful visualizations, and accurate tracking of portfolio holdings and value. Designed with modularity and extensibility in mind, it serves as a powerful base for developing and testing sophisticated investment strategies and risk management techniques.</p>
+<p>Whether you are an individual investor seeking better tools, a developer building fintech applications, or a quantitative analyst prototyping strategies, this engine offers core functionalities wrapped in a clean, well-documented, and test-covered codebase.</p>
+<h2 id="key-features-current">Key Features (Current)</h2>
+<ul>
+<li><strong>Flexible Data Retrieval (<code>stock_plotter</code>):</strong><ul>
+<li>Fetch historical stock price data (Close prices) from Yahoo Finance.</li>
+<li>Supports standard Yahoo Finance time periods (e.g., <code>1y</code>, <code>6mo</code>, <code>ytd</code>).</li>
+<li>Parses intuitive natural language date ranges (e.g., <code>"from 2022"</code>, <code>"this year"</code>).</li>
+<li>Handles relative time periods (e.g., <code>3M</code>, <code>10D</code>, <code>2W</code>).</li>
+<li>Robust error handling for invalid tickers or time periods.</li>
+</ul>
+</li>
+<li><strong>Market Trend Visualization (<code>stock_plotter</code>):</strong><ul>
+<li>Generate interactive time-series plots of stock prices using Plotly.</li>
+<li>Includes features like range selectors and hover-over data inspection.</li>
+<li>Customizable and embeddable plot objects.</li>
+</ul>
+</li>
+<li><strong>Portfolio Tracking (<code>portfolio_manager</code>):</strong><ul>
+<li>Initialize portfolios with starting asset quantities.</li>
+<li>Record and apply historical changes to holdings (buys, sells, rebalances) using absolute quantities or relative adjustments (e.g., <code>+10</code>, <code>-5</code>).</li>
+<li>Handles multiple tickers simultaneously.</li>
+</ul>
+</li>
+<li><strong>Performance Calculation (<code>portfolio_manager</code>):</strong><ul>
+<li>Calculates the daily market value of individual holdings based on historical prices.</li>
+<li>Computes the total portfolio value across all assets for each day in the specified period.</li>
+<li>Handles missing price data gracefully using forward-fill.</li>
+</ul>
+</li>
+<li><strong>Composition Analysis (<code>portfolio_manager</code>):</strong><ul>
+<li>Determine the percentage allocation (based on value) of each asset within the portfolio for any given historical date or the latest available date.</li>
+</ul>
+</li>
+<li><strong>Robust Foundation:</strong><ul>
+<li>Comprehensive logging for diagnostics and monitoring.</li>
+<li>Custom exceptions for clear error identification.</li>
+<li>Type hinting for improved code clarity and maintainability.</li>
+<li>Unit tested using <code>pytest</code> for core functionalities.</li>
+<li>Dockerized for consistent development and deployment environments.</li>
+</ul>
+</li>
+</ul>
+<h2 id="technology-stack">Technology Stack</h2>
+<ul>
+<li><strong>Core:</strong> Python (3.11+)</li>
+<li><strong>Data Handling:</strong> Pandas, NumPy</li>
+<li><strong>Financial Data Source:</strong> yfinance</li>
+<li><strong>Testing:</strong> pytest</li>
+<li><strong>Containerization:</strong> Docker</li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Git</li>
+<li>Python 3.11 or higher</li>
+<li><code>pip</code> and <code>venv</code> (recommended)</li>
+</ul>
+<h3 id="installation">Installation</h3>
+<ol>
+<li>
+<p><strong>Clone the repository:</strong>
+    <code>bash
+    git clone &lt;your-repository-url&gt;
+    cd portfolio-analytics-engine # Or your chosen directory name</code></p>
+</li>
+<li>
+<p><strong>Create and activate a virtual environment (recommended):</strong>
+    <code>bash
+    python -m venv venv
+    # On Windows
+    .\venv\Scripts\activate
+    # On macOS/Linux
+    source venv/bin/activate</code></p>
+</li>
+<li>
+<p><strong>Install dependencies:</strong>
+    <code>bash
+    pip install -r requirements.txt</code></p>
+</li>
+</ol>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="1-plotting-stock-trends-command-line">1. Plotting Stock Trends (Command Line)</h3>
+<p>Use the <code>stock_plotter.py</code> script directly from your terminal:</p>
+<pre><code class="language-bash"># Plot Apple's stock price for the last year
+python stock_plotter.py AAPL 1y
+
+# Plot Microsoft's stock price from the start of 2023
+python stock_plotter.py MSFT &quot;from 2023&quot;
+
+# Plot Tesla's stock price for the last 6 months (relative)
+python stock_plotter.py TSLA 6M
+
+# Enable debug logging
+python stock_plotter.py GOOGL 1mo --debug
+</code></pre>
+<p><em>(Note: Plotting requires a graphical environment if <code>show=True</code>)</em></p>
+<h3 id="2-using-modules-programmatically-python">2. Using Modules Programmatically (Python)</h3>
+<p>Integrate the engine's components into your own Python scripts:</p>
+<pre><code class="language-python">import pandas as pd
+from stock_plotter import StockTrendPlotter
+from portfolio_manager import PortfolioManager, InvalidInputError, DataFetchError
+
+# --- Using StockTrendPlotter ---
+try:
+    plotter = StockTrendPlotter(ticker='NVDA', time_period='6mo')
+    # Fetch data
+    price_data = plotter.fetch_data()
+    print(&quot;Fetched NVDA Data:\n&quot;, price_data.tail())
+    # Generate plot object (don't show automatically)
+    # fig = plotter.plot_trend(show=False)
+    # fig.write_html(&quot;nvda_plot.html&quot;) # Save plot to file
+except (ValueError, IOError) as e:
+    print(f&quot;Error plotting NVDA: {e}&quot;)
+
+# --- Using PortfolioManager ---
+initial_holdings = {'AAPL': 10, 'GOOGL': 5}
+time_frame = '1y' # Data lookback period
+
+try:
+    manager = PortfolioManager(initial_portfolio=initial_holdings, time_period=time_frame)
+
+    # Add portfolio changes (transactions)
+    manager.add_change('2023-08-15', 'AAPL', '+5')    # Bought 5 more AAPL
+    manager.add_change('2023-10-01', 'GOOGL', 2)     # Holdings adjusted to 2 GOOGL
+    manager.add_change('2023-11-20', 'MSFT', 8)      # New holding MSFT
+    manager.add_change('2023-12-05', 'AAPL', '-3')     # Sold 3 AAPL
+
+    # Calculate portfolio history (fetches data for AAPL, GOOGL, MSFT)
+    portfolio_history_df = manager.get_portfolio_data() # Builds if not already built
+
+    if portfolio_history_df is not None:
+        print(&quot;\nPortfolio History (Tail):\n&quot;, portfolio_history_df.tail())
+
+        # Get portfolio composition for a specific date (or latest if None)
+        composition_latest = manager.get_composition()
+        composition_specific = manager.get_composition(date='2023-11-25') # Finds nearest if exact not found
+
+        print(&quot;\nLatest Portfolio Composition (%):\n&quot;, composition_latest)
+        print(&quot;\nPortfolio Composition on 2023-11-25 (%):\n&quot;, composition_specific)
+
+except (InvalidInputError, DataFetchError, PortfolioBuildError) as e:
+    print(f&quot;Portfolio management error: {e}&quot;)
+except Exception as e:
+    print(f&quot;An unexpected error occurred: {e}&quot;)
+
+</code></pre>
+<h2 id="testing">Testing</h2>
+<p>Unit tests are implemented using <code>pytest</code>. To run the tests:</p>
+<ol>
+<li>Ensure you have installed the development dependencies (if any are added later, e.g., <code>pytest-mock</code>). Currently, <code>pytest</code> is included in <code>requirements.txt</code>.</li>
+<li>Navigate to the project's root directory in your terminal.</li>
+<li>Run <code>pytest</code>:
+    <code>bash
+    pytest -v # -v for verbose output</code>
+    <em>(Note: Some tests may require network access to fetch sample data or interact with APIs indirectly via mocks)</em></li>
+</ol>
+<h2 id="docker-support">Docker Support</h2>
+<p>A <code>Dockerfile</code> is provided to build a container image with the necessary environment and dependencies. This ensures consistency across different machines.</p>
+<ol>
+<li>
+<p><strong>Build the Docker image:</strong>
+    <code>bash
+    docker build -t portfolio-engine .</code></p>
+</li>
+<li>
+<p><strong>Run a container (example: execute a script):</strong>
+    You can run scripts within the container environment. Mount your local project directory to access your files inside the container.
+    ```bash
+    # Example: Run the stock_plotter script inside the container
+    # (Note: Plotting directly might require X11 forwarding setup)
+    docker run --rm -v "$(pwd):/app" portfolio-engine python stock_plotter.py AAPL 1mo</p>
+<h1 id="example-run-an-interactive-python-session-inside-the-container">Example: Run an interactive python session inside the container</h1>
+<p>docker run --rm -it -v "$(pwd):/app" portfolio-engine python
+```</p>
+</li>
+</ol>
+<h2 id="project-structure">Project Structure</h2>
+<pre><code>portfolio-analytics-engine/
+│
+├── api_tests/              # Placeholder or actual API/integration tests
+│   ├── __pycache__/
+│   └── .pytest_cache/
+│
+├── portfolio_manager.py    # Core portfolio tracking and calculation logic
+├── stock_plotter.py        # Data fetching and plotting logic
+│
+├── test_portfolio_manager.py # Unit tests for portfolio_manager
+├── test_stock_plotter.py     # Unit tests for stock_plotter
+│
+├── yahoo_finance_setup.ipynb # Jupyter Notebook for experimentation/setup (if used)
+│
+├── .gitignore              # Specifies intentionally untracked files for Git
+├── Dockerfile              # Defines the Docker container environment
+├── README.md               # This file
+└── requirements.txt        # Project dependencies
+</code></pre>
+<h2 id="roadmap-future-directions">Roadmap &amp; Future Directions</h2>
+<p>This engine provides a strong foundation. Future development aims to incorporate more advanced analytics and strategy evaluation capabilities:</p>
+<h3 id="planned-enhancements">Planned Enhancements</h3>
+<ul>
+<li><strong>📈 Enhanced Data Handling:</strong><ul>
+<li>Integration with multiple data sources (e.g., Alpha Vantage, IEX Cloud, paid providers).</li>
+<li>Support for fetching broader datasets (OHLCV, fundamental data, economic indicators).</li>
+<li>Robust data cleaning and persistence mechanisms (local caching/database).</li>
+</ul>
+</li>
+<li><strong>💼 Sophisticated Portfolio Management:</strong><ul>
+<li>Explicit cash management and currency handling.</li>
+<li>Simulation of transaction costs (brokerage fees, slippage).</li>
+<li>Handling of corporate actions (dividends, stock splits).</li>
+</ul>
+</li>
+<li><strong>⚙️ Backtesting Framework:</strong><ul>
+<li>A dedicated engine for simulating strategy execution on historical data.</li>
+<li>Calculation of standard performance metrics (Sharpe Ratio, Sortino Ratio, Max Drawdown, CAGR).</li>
+<li>Comparison against benchmarks (e.g., S&amp;P 500).</li>
+<li>Visualization of backtest results, including equity curves and trade logs.</li>
+<li>"Historical Event Replay" feature to analyze strategy performance during specific market conditions (e.g., 2008 crisis, COVID crash).</li>
+</ul>
+</li>
+<li><strong>⚖️ Risk Management &amp; Optimization:</strong><ul>
+<li><strong>Monte Carlo Simulation:</strong> Forecasting potential portfolio outcomes and visualizing risk distributions.</li>
+<li><strong>Convex Optimization:</strong> Implementation of Mean-Variance Optimization (MVO) to find efficient frontiers and optimal risk-return trade-offs (using <code>scipy.optimize</code>).</li>
+</ul>
+</li>
+<li><strong>🛠️ Infrastructure &amp; Quality:</strong><ul>
+<li>Configuration management for API keys, parameters, etc.</li>
+<li>Potential implementation of CI/CD pipelines for automated testing and deployment.</li>
+</ul>
+</li>
+</ul>
+<h3 id="exploratory-advanced-features">Exploratory Advanced Features</h3>
+<ul>
+<li><strong>🤖 Reinforcement Learning (RL) for Strategy Optimization:</strong><ul>
+<li>Investigating the feasibility of using RL agents (e.g., DQN, PPO) to learn dynamic asset allocation strategies based on market state indicators. Requires careful state/action/reward design and robust training infrastructure.</li>
+</ul>
+</li>
+<li><strong>📊 Explainable AI (XAI) for Model Interpretation:</strong><ul>
+<li>If complex models (like RL) are implemented, exploring techniques like SHAP to understand feature importance and model decision drivers.</li>
+</ul>
+</li>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions are welcome! If you have suggestions for improvements, find a bug, or want to add new features:</p>
+<ol>
+<li><strong>Fork the repository.</strong></li>
+<li><strong>Create a new branch</strong> for your feature or bug fix (<code>git checkout -b feature/your-feature-name</code>).</li>
+<li><strong>Make your changes.</strong> Ensure you add or update tests accordingly.</li>
+<li><strong>Run tests</strong> (<code>pytest</code>) to confirm everything passes.</li>
+<li><strong>Commit your changes</strong> (<code>git commit -m 'Add some feature'</code>).</li>
+<li><strong>Push to the branch</strong> (<code>git push origin feature/your-feature-name</code>).</li>
+<li><strong>Open a Pull Request</strong> against the <code>main</code> branch of the original repository.</li>
+</ol>
+<p>Please open an issue first to discuss any significant changes.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": ".", "features": ["navigation.expand", "navigation.top", "content.code.annotate"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

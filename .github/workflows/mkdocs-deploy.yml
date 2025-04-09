@@ -1,0 +1,28 @@
+name: Deploy MkDocs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # or 'master' if that's your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Set up Python 🐍
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies 📦
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build and Deploy 🚀
+        run: |
+          pip install ghp-import
+          mkdocs build
+          ghp-import -n -p site
