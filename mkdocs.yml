@@ -1,0 +1,16 @@
+site_name: Stock Market Documentation
+site_description: Documentation for the Stock Market project
+site_author: Sujay Shrivastava
+
+nav:
+  - Home: README.md
+  - Script Information: script_information.md
+  - Available Strategies: available_strategies.md
+  - Strategy Instructions: strategy_instructions.md
+
+theme:
+  name: material
+  features:
+    - navigation.expand
+    - navigation.top
+    - content.code.annotate 

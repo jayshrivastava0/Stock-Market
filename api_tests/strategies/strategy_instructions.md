@@ -291,12 +291,16 @@ The current backtesting engine has limitations. The following are **NOT** direct
 Once your `MyCustomStrategy` class is defined (e.g., in `my_strategies.py`):
 
 1.  **Import it** into the script where you are running the `Backtester`.
+    <!-- ddncsnc -->
     ```python
     from my_strategies import MyCustomStrategy
     from backtester import Backtester, BasicCommission
     # ... other necessary imports
     ```
+
 2.  **Pass the class name** (not an instance) to the `Backtester` constructor:
+    <!-- scdsdc -->
+
     ```python
     # Configure parameters for your strategy
     strategy_specific_params = {
@@ -320,6 +324,6 @@ Once your `MyCustomStrategy` class is defined (e.g., in `my_strategies.py`):
 
     # Get results
     equity_curve, trades = bt.get_results()
+    
     ```
 
----

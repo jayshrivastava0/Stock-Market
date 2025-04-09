@@ -270,6 +270,7 @@ The current backtesting engine has limitations. The following are **NOT** direct
 Once your `MyCustomStrategy` class is defined (e.g., in `my_strategies.py`):
 
 1.  **Import it** into the script where you are running the `Backtester`.
+
     ```python
     from my_strategies import MyCustomStrategy
     from backtester import Backtester, BasicCommission

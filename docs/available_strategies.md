@@ -126,3 +126,4 @@ equity_curve, trades = bt.get_results()
 # Analyze results...
 print(equity_curve.tail())
 print(trades.head())
+```
