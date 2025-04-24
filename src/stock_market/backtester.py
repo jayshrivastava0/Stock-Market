@@ -60,7 +60,7 @@ DEFAULT_VALUATION_PRICE_COL: Final[str] = CLOSE
 
 # --- Dependency: Data Handler ---
 try:
-    from data_handler import (
+    from src.stock_market.data_handler import (
         fetch_stock_data,
         # Potentially reuse validation helpers if made public in data_handler
         # _validate_date_input,

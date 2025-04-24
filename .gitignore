@@ -28,3 +28,5 @@ venv/
 build/
 dist/
 *.egg-info/
+
+site/

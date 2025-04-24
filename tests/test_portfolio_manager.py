@@ -8,8 +8,8 @@ from pandas.testing import assert_frame_equal, assert_series_equal, assert_index
 from typing import Dict, List, Optional, Set, Tuple, Union, cast
 
 # Import the module and classes/exceptions to test
-import portfolio_manager as pm
-from portfolio_manager import (
+import src.stock_market.portfolio_manager as pm
+from src.stock_market.portfolio_manager import (
     PortfolioManager,
     InvalidInputError,
     DataFetchError,
@@ -18,7 +18,7 @@ from portfolio_manager import (
     PRICE_COLUMN_NAME # Import the constant used for price lookup
 )
 # Assuming data_handler exceptions might be wrapped or need checking
-from data_handler import DataFetchError as DH_DataFetchError
+from src.stock_market.data_handler import DataFetchError as DH_DataFetchError
 
 
 # --- Fixtures ---
@@ -223,7 +223,7 @@ def test_determine_date_range_invalid_period():
 # --- Test Building Portfolio (build_portfolio & _fetch_all_data) ---
 
 # Use patch where fetch_stock_data is imported/used inside portfolio_manager
-@patch('portfolio_manager.fetch_stock_data', autospec=True)
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', autospec=True)
 def test_build_portfolio_no_changes(mock_fetch, mock_fetch_data_success, sample_initial_portfolio):
     """Test build with only initial holdings, using mocked fetch_stock_data."""
     mock_fetch.return_value = mock_fetch_data_success # Configure mock return
@@ -273,7 +273,7 @@ def test_build_portfolio_no_changes(mock_fetch, mock_fetch_data_success, sample_
     assert df_portfolio.loc[first_date, 'Total_Value'] == pytest.approx(expected_total_day1)
 
 
-@patch('portfolio_manager.fetch_stock_data', autospec=True)
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', autospec=True)
 def test_build_portfolio_with_changes(mock_fetch, mock_fetch_data_success):
     """Test build with initial holdings and various changes."""
     mock_fetch.return_value = mock_fetch_data_success
@@ -322,7 +322,7 @@ def test_build_portfolio_with_changes(mock_fetch, mock_fetch_data_success):
     assert df.loc[date_check, 'Total_Value'] == pytest.approx(expected_total)
 
 
-@patch('portfolio_manager.fetch_stock_data', autospec=True)
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', autospec=True)
 def test_build_portfolio_relative_below_zero(mock_fetch, mock_fetch_data_success):
     """Test relative change attempting negative quantity (should cap at 0)."""
     mock_fetch.return_value = mock_fetch_data_success
@@ -338,7 +338,7 @@ def test_build_portfolio_relative_below_zero(mock_fetch, mock_fetch_data_success
     assert (df['AAPL_value'] >= 0).all() # Value should not be negative
 
 
-@patch('portfolio_manager.fetch_stock_data', autospec=True)
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', autospec=True)
 def test_build_portfolio_fetch_fails_one_ticker(mock_fetch, mock_fetch_data_partial_fail):
     """Test build when fetch only returns data for some tickers."""
     mock_fetch.return_value = mock_fetch_data_partial_fail # GOOG data missing
@@ -369,7 +369,7 @@ def test_build_portfolio_fetch_fails_one_ticker(mock_fetch, mock_fetch_data_part
     assert df.loc[date_check, 'Total_Value'] == pytest.approx(expected_total)
 
 
-@patch('portfolio_manager.fetch_stock_data', side_effect=DH_DataFetchError("Simulated fetch failure"))
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', side_effect=DH_DataFetchError("Simulated fetch failure"))
 def test_build_portfolio_fetch_fails_all(mock_fetch_fails):
     """Test build failure when data_handler.fetch_stock_data raises error."""
     initial = {'AAPL': 10}
@@ -384,7 +384,7 @@ def test_build_portfolio_fetch_fails_all(mock_fetch_fails):
     assert pm_instance._portfolio_data is None # Ensure cache is None
 
 
-@patch('portfolio_manager.fetch_stock_data', return_value=pd.DataFrame()) # Return empty DF
+@patch('src.stock_market.portfolio_manager.fetch_stock_data', return_value=pd.DataFrame()) # Return empty DF
 def test_build_portfolio_fetch_returns_empty_df(mock_fetch_empty):
     """Test build when data_handler returns an empty DataFrame."""
     initial = {'AAPL': 10}

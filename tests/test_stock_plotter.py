@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from unittest.mock import patch, MagicMock # For mocking yfinance
 
 # Import the class to be tested
-from stock_plotter import StockTrendPlotter, go # Import go for type checking
+from src.stock_market.stock_plotter import StockTrendPlotter, go # Import go for type checking
 
 # --- Fixtures ---
 
@@ -125,7 +125,7 @@ def test_validate_period_invalid():
 # --- Test Fetch Data (using Mocking) ---
 
 # Patch yfinance.Ticker globally for these tests
-@patch('stock_plotter.yf.Ticker') # Use the path where Ticker is *used*
+@patch('src.stock_market.stock_plotter.yf.Ticker') # Use the path where Ticker is *used*
 def test_fetch_data_with_period(mock_yf_ticker, sample_dataframe):
     """Test fetching data using a standard yfinance period string."""
     # Configure the mock Ticker instance and its history method
@@ -146,7 +146,7 @@ def test_fetch_data_with_period(mock_yf_ticker, sample_dataframe):
     assert len(df) == 3
     assert pd.api.types.is_datetime64_any_dtype(df['Date'])
 
-@patch('stock_plotter.yf.Ticker')
+@patch('src.stock_market.stock_plotter.yf.Ticker')
 def test_fetch_data_with_dates(mock_yf_ticker, sample_dataframe, today_normalized):
     """Test fetching data using a calculated date range (e.g., 'from 2023')."""
     mock_ticker_instance = MagicMock()
@@ -169,7 +169,7 @@ def test_fetch_data_with_dates(mock_yf_ticker, sample_dataframe, today_normalize
     assert isinstance(df, pd.DataFrame)
     assert list(df.columns) == ['Date', 'Price']
 
-@patch('stock_plotter.yf.Ticker')
+@patch('src.stock_market.stock_plotter.yf.Ticker')
 def test_fetch_data_empty(mock_yf_ticker):
     """Test the case where yfinance returns an empty DataFrame."""
     mock_ticker_instance = MagicMock()
@@ -180,7 +180,7 @@ def test_fetch_data_empty(mock_yf_ticker):
     with pytest.raises(ValueError, match="No data found"):
         plotter.fetch_data()
 
-@patch('stock_plotter.yf.Ticker')
+@patch('src.stock_market.stock_plotter.yf.Ticker')
 def test_fetch_data_yfinance_error(mock_yf_ticker):
     """Test handling of errors during yfinance call."""
     mock_ticker_instance = MagicMock()

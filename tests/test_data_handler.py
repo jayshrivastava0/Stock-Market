@@ -10,8 +10,8 @@ from pandas import DatetimeIndex, MultiIndex
 from pandas.testing import assert_frame_equal, assert_index_equal
 
 # Module and exceptions under test
-import data_handler
-from data_handler import (
+import src.stock_market.data_handler
+from src.stock_market.data_handler import (
     DataFetchError,
     DataHandlerError,
     DataProcessingError,
@@ -162,7 +162,7 @@ def test_clean_ticker_list_invalid(invalid_input):
 
 # --- Tests for fetch_stock_data ---
 
-@patch('data_handler.yf.download') # Mock the external dependency
+@patch('src.stock_market.data_handler.yf.download') # Mock the external dependency
 def test_fetch_success_adj_close(
     mock_download: MagicMock,
     mock_yf_download_success_adj: pd.DataFrame,
@@ -221,7 +221,7 @@ def test_fetch_success_adj_close(
     assert pd.api.types.is_integer_dtype(result_df[('Volume', 'MSFT')])
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_success_raw_ohlcv(
     mock_download: MagicMock,
     mock_yf_download_success_raw: pd.DataFrame,
@@ -265,7 +265,7 @@ def test_fetch_success_raw_ohlcv(
     assert 'Volume' in result_df.columns.get_level_values('DataType')
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_partial_failure_warning(
     mock_download: MagicMock,
     mock_yf_download_partial_fail: pd.DataFrame,
@@ -296,7 +296,7 @@ def test_fetch_partial_failure_warning(
     assert "GOOG" not in returned_tickers
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_total_failure_empty_df(
     mock_download: MagicMock,
     sample_tickers: list[str],
@@ -314,7 +314,7 @@ def test_fetch_total_failure_empty_df(
         )
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_total_failure_api_exception(
     mock_download: MagicMock,
     sample_tickers: list[str],
@@ -332,7 +332,7 @@ def test_fetch_total_failure_api_exception(
         )
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_timezone_normalization(
     mock_download: MagicMock,
     mock_yf_download_tz_aware: pd.DataFrame, # Has tz-aware index
@@ -402,7 +402,7 @@ def test_fetch_start_date_after_end_date(sample_tickers, valid_start_date_str, v
 
 # --- Test for Custom yfinance Parameters ---
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_with_custom_yf_params(
     mock_download: MagicMock,
     mock_yf_download_success_adj: pd.DataFrame,
@@ -433,7 +433,7 @@ def test_fetch_with_custom_yf_params(
 
 # --- Tests for Potential Data Processing Errors (Harder to simulate perfectly) ---
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_non_multiindex_columns_error(
     mock_download: MagicMock,
     sample_tickers: list[str],
@@ -453,7 +453,7 @@ def test_fetch_non_multiindex_columns_error(
             end_date_str=valid_end_date_str,
         )
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 @patch('pandas.to_datetime', side_effect=TypeError("Simulated conversion failure")) # Mock conversion failure
 def test_fetch_index_conversion_failure(
     mock_to_datetime: MagicMock,
@@ -480,7 +480,7 @@ def test_fetch_index_conversion_failure(
     mock_to_datetime.assert_called() # Verify our mock was hit
 
 
-@patch('data_handler.yf.download')
+@patch('src.stock_market.data_handler.yf.download')
 def test_fetch_data_becomes_empty_after_filtering(
     mock_download: MagicMock,
     mock_yf_download_success_adj: pd.DataFrame,

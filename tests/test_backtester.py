@@ -19,7 +19,7 @@ import logging
 import re
 
 # Imports from the module being tested
-from backtester import (
+from src.stock_market.backtester import (
     Backtester, Strategy, Order, Trade, BasicCommission, CommissionModel,
     # Exceptions
     ConfigError, DataError, StrategyError, InsufficientFundsError, InsufficientHoldingsError, BacktesterError,
@@ -30,7 +30,7 @@ from backtester import (
     OPEN, CLOSE, HIGH, LOW, VOLUME 
 )
 # Assume data_handler exceptions might be raised indirectly via fetch_func
-from data_handler import (
+from src.stock_market.data_handler import (
     DataFetchError as DH_DataFetchError,
     InvalidInputError as DH_InvalidInputError,
     DataProcessingError as DH_DataProcessingError

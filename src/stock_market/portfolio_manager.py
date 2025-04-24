@@ -41,7 +41,7 @@ class PortfolioBuildError(PortfolioError):
 # --- Dependency ---
 try:
     # Import the core fetching function and its specific exceptions
-    from data_handler import (fetch_stock_data,
+    from src.stock_market.data_handler import (fetch_stock_data,
                               DataFetchError as DH_DataFetchError,
                               InvalidInputError as DH_InvalidInputError,
                               DataProcessingError as DH_DataProcessingError)
